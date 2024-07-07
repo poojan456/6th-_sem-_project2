@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet"
+		href="style.css">
+	<title>About Us</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		 
+		/* Global Styles */
+		 
+		body {
+			font-family: Arial, sans-serif;
+		}
+		 
+		/* Header */
+		 
+		header {
+			background-color: white;
+			color: rgb(0, 0, 0);
+			padding: 10px 0;
+			position: fixed;
+			width: 100%;
+			z-index: 100;
+			box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+		}
+		 
+		nav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin: 5px auto;
+			padding: 0 20px;
+		}
+		 
+		.logo {
+			font-size: 1.5rem;
+			font-weight: bold;
+			color: #40b736;
+		}
+		 
+		.nav-links {
+			list-style: none;
+			display: flex;
+		}
+		 
+		.nav-links li {
+			margin-right: 20px;
+		}
+		 
+		.nav-links a {
+			color: rgb(0, 0, 0);
+			padding: 10px;
+			font-weight: bold;
+			text-decoration: none;
+		}
+		 
+		.nav-links a:hover {
+			background-color: #40b736;
+			border-radius: 4px;
+			color: white;
+		}
+		 
+		/* About Section */
+		 
+		.about {
+			background: rgb(224, 251, 222);
+			background: linear-gradient(360deg, rgb(245, 255, 245) 0%, rgb(173, 252, 163) 100%);
+			padding: 100px 0 20px 0;
+			text-align: center;
+		}
+		 
+		.about h1 {
+			font-size: 2.5rem;
+			margin-bottom: 20px;
+		}
+		.about h2 {
+			text-align: center;
+		
+		
+		}
+		.about table{
+			align-self: center;
+			margin: auto;
+		}
+		
+		 
+		.about p {
+			font-size: 1rem;
+			color: #323030;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+		 
+		.about-info {
+			margin: 2rem 2rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: left;
+		}
+		 
+		.about-img {
+			width: 20rem;
+			height: 20rem;
+		 
+		}
+		 
+		.about-img img {
+			width: 100%;
+			height: 100%;
+			border-radius: 5px;
+			object-fit: contain;
+		}
+		 
+		.about-info p {
+			font-size: 1.3rem;
+			margin: 0 2rem;
+			text-align: justify;
+		}
+		 
+		
+		
+		
+		 
+		/* Team Section */
+		 
+		.team {
+			padding: 30px 0;
+			text-align: center;
+		}
+		 
+		.team h1 {
+			font-size: 2.5rem;
+			margin-bottom: 20px;
+		}
+		 
+		.team-cards {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 15px;
+			margin-top: 20px;
+		}
+		 
+		.card {
+			background-color: white;
+			border-radius: 6px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+			overflow: hidden;
+			transition: transform 0.2s, box-shadow 0.2s;
+			width: 18rem;
+			height: 10rem;
+			margin-top: 10px;
+		}
+		 
+		.card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
+		}
+		 
+		.card-img {
+			width: 18rem;
+			height: 12rem;
+		}
+		 
+		.card-img img {
+			width: 100%;
+			height: 100%;
+			object-fit: fill;
+		}
+		 
+		.card-info button {
+			margin: 2rem 1rem;
+		}
+		 
+		.card-name {
+			font-size: 2rem;
+			margin: 10px 0;
+		}
+		 
+		.card-role {
+			font-size: 1rem;
+			color: #888;
+			margin: 5px 0;
+		}
+		 
+		.card-email {
+			font-size: 1rem;
+			color: #555;
+		}
+		 
+		/* Footer */
+		footer {
+			background-color: #222;
+			color: white;
+			text-align: center;
+			padding: 20px 0;
+		}
+		 
+		@media (max-width: 768px) {
+			nav {
+				display: block;
+			}
+		 
+			.logo {
+				text-align: center;
+			}
+		 
+			.nav-links {
+				margin-top: 1rem;
+				justify-content: space-between;
+			}
+		 
+			.nav-links li {
+				margin-right: 0;
+			}
+		 
+			.about h1 {
+				font-size: 2rem;
+			}
+		 
+			.about p {
+				font-size: 0.9rem;
+			}
+		 
+			.about-info {
+				flex-direction: column;
+				text-align: center;
+			}
+		 
+			.about-img {
+				width: 60%;
+				height: 60%;
+				margin-bottom: 1rem;
+			}
+		 
+			.about-info p {
+				margin: 1rem 2rem;
+			}
+		 
+			.about-info button {
+				margin: 1rem 2rem;
+				width: 10rem;
+			}
+		 
+			.team {
+				margin: 0 1rem;
+			}
+		}
+		
+	</style>
+</head>
+
+<body>
+	
+	
+
+	<section class="about">
+		<h1>About Us</h1>
+		<p style="font-weight: bold">
+		Giving the confirm timing of bus...
+		</p>
+		<div class="about-info">
+			<div class="about-img">
+				<img src=
+                https://www.mumbailive.com/images/media/images/images_1550653795133_images_1521017066556_ST_Bus.jpg?bg=7c7d81&crop=1368%2C768%2C0%2C0&fit=fill&h=768&height=768&w=1368&width=1368 alt="Lalpari">
+			</div>
+			<div>
+			<p> Track my bus feature enables our on-the-go Students and their families to keep track of the bus location. You can track your bus on a map and use the information to plan your commute to the boarding point and to get off at the right stop. Family members and friends can also check the bus location to coordinate pick-ups and rest assured about your safety. Bus operators use this feature to share any delay in bus schedule and which are instantly shared with you. A win- win for all, it’s the smarter way to travel!
+			</p>
+			<h2><style font-size="24"></style>
+                Contact details
+			</h2>
+			<table border="3" align="center" class="camp">
+				
+			    <thead>
+            
+				<td>
+					SR.NO.
+				   </td>
+					<td>
+					   DEPO
+					</td>
+					 
+				 
+					 <td>
+					CONTACT NO.
+					 </td>
+					 
+					 
+				</thead>
+				   <tr>
+				   <td>
+					1
+				   </td>
+					<td>
+						ROHA
+					</td>
+					 
+				 
+					 <td>
+						02194: 232217
+					 </td>
+					 
+					 
+				   </tr>
+				   <tr>
+				   <td>
+					2
+				   </td>
+					<td>
+					   MANGOAN
+					</td>
+					 
+				 
+					 <td>
+						02140 263533
+					 </td>
+					 
+					 
+				   </tr>
+				   <tr>
+				   <td>
+					3
+				   </td>
+					<td>
+					  MAHAD
+					</td>
+					 
+				 
+					 <td>
+						02145: 222139
+					 </td>
+					 
+					 
+				   </tr>
+				   
+					 
+					 
+					 
+				 
+					 
+			</table>
+			</div>
+		
+
+		
+		</div>
+	</section>
+
+	<section class="team">
+		<h1>Meet Our Team</h1>
+		<div class="team-cards">
+		
+			<!-- Cards here -->
+			<!-- Card 1 -->
+		
+			<div class="card">
+				
+				
+				<div class="card-info">
+					<h2 class="card-name">Purva Kurle</h2>
+					<p class="card-role">2130331245020</p>
+					<p class="card-email">191.purvakurle@gmail.com</p>
+					<p><button class="button">Contact</button></p>
+				</div>
+			</div>
+
+			<!-- Card 2 -->
+		
+		<div class="card">
+				
+				<div class="card-info">
+					<h2 class="card-name">Rakhi Dhole</h2>
+					<p class="card-role">2130331245001</p>
+					<p class="card-email">rakhidhole721@gmail.com</p>
+					<p><button class="button">Contact</button></p>
+				</div>
+			</div>
+		
+			<!-- Card 3 -->
+		
+			<div class="card">
+				
+				<div class="card-info">
+					<h2 class="card-name">Pooja Nagapurkar</h2>
+					<p class="card-role">2130331245049</p>
+					<p class="card-email">pooja1713953@gmail.com.com</p>
+					<p><button class="button">Contact</button></p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<footer>
+		<p>© 2024 trackbus. All Rights Reserved.</p>
+	</footer>
+</body>
+
+</html>

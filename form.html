@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Geolocation</title>
+    <link rel="stylesheet" href="/static/style3.css">
+</head>
+<body>
+<form method="post" action="{% url 'track_bus_view' %}">
+    {% csrf_token %}
+    <div class="input-group">
+    <label for="Destination">Destination:</label>
+    <input type="text" name="Destination" id="Destination">
+    </div>
+    <div class="input-group">
+    <label for="Source">Source:</label>
+    <input type="text" name="Source" id="Source">
+    </div>
+    <button type="submit">Track Bus</button>
+</form>
+</body>
+</html>

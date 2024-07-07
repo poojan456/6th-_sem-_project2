@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Track Bus</title>
+    <link rel="stylesheet" href="/static/style4.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Track Bus</h1>
+    <div class="login-container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <br>
+    {% if route_data %}
+    <div class="map-container">
+        <button onclick="resetBusTracking()">Reset Bus Tracking</button>
+        <button onclick="swapSourceAndDestination()">Swap Source and Destination</button>
+        <div id="map" style="width: 100%; height: 600px;"></div>
+    </div>
+    <script>
+        var map = L.map('map').setView({{ route_data.Src|safe }}, 11);
+        var mapLink = "<a href='http://openstreetmap.org'>OpenStreetMap</a>";
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: 'Leaflet &copy; ' + mapLink + ', contribution',
+            maxZoom: 18
+        }).addTo(map);
+
+        var busIcon = L.icon({
+            iconUrl: "/static/download.png",
+            iconSize: [20, 20]
+        });
+
+        var sourceLatLng = {{ route_data.Src|safe }};
+        var destinationLatLng = {{ route_data.Dest|safe }};
+        var departureTime = '{{ route_data.departure_time|time:"H:i:s" }}';
+        var busId = {{ route_data.number }};
+        var marker = null;
+
+        // Retrieve bus current position from local storage or use source as default
+        var busCurrentPosition = JSON.parse(localStorage.getItem('busCurrentPosition_' + busId)) || sourceLatLng;
+
+        var sourceMarker = L.marker(sourceLatLng).addTo(map)
+            .bindPopup('Source: {{ route_data.source_name }}');
+        var destinationMarker = L.marker(destinationLatLng).addTo(map)
+            .bindPopup('Destination: {{ route_data.destination_name }}');
+
+        // Check if swap timer is running
+        var swapTimerKey = 'swapTimer_' + busId;
+        var swapTimerStart = localStorage.getItem(swapTimerKey);
+
+        if (swapTimerStart) {
+            var elapsed = (Date.now() - swapTimerStart) / 1000;
+            if (elapsed >= 20) {
+                swapSourceAndDestination();
+            } else {
+                setTimeout(swapSourceAndDestination, (20 - elapsed) * 1000);
+            }
+        }
+
+        // Function to check the departure time and start the bus movement
+        function checkDepartureTimeAndStartBus() {
+            var currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+            var busStatusKey = 'busStatus_' + busId;
+            var busStartTimeKey = 'busStartTime_' + busId;
+
+            console.log('Current Time:', currentTime);
+            console.log('Departure Time:', departureTime);
+
+            if (currentTime < departureTime) {
+                alert("The bus has not departed yet.");
+                resetBusTracking();
+                setTimeout(refreshPage, 60000);
+                return;
+            }
+
+            if (currentTime === departureTime) {
+                alert("Location reloaded");
+                location.reload();
+                return;
+            }
+
+            var busStatus = localStorage.getItem(busStatusKey);
+
+            if (!busStatus || busStatus === 'notStarted') {
+                localStorage.setItem(busStatusKey, 'started');
+                localStorage.setItem(busStartTimeKey, Date.now());
+                moveBus();
+            } else if (busStatus === 'started') {
+                moveBus();
+            } else if (busStatus === 'reached') {
+                alert("The bus has already reached its destination.");
+            }
+        }
+
+        // Function to move the bus
+        function moveBus() {
+            var busStatusKey = 'busStatus_' + busId;
+            var busStartTimeKey = 'busStartTime_' + busId;
+            var busCurrentPositionKey = 'busCurrentPosition_' + busId;
+
+            L.Routing.control({
+                waypoints: [
+                    L.latLng(busCurrentPosition[0], busCurrentPosition[1]),
+                    L.latLng(destinationLatLng[0], destinationLatLng[1])
+                ],
+                createMarker: function() { return null; }
+            }).on('routesfound', function (e) {
+                var routes = e.routes;
+                var coordinates = routes[0].coordinates;
+
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                marker = L.marker(busCurrentPosition, { icon: busIcon }).addTo(map);
+
+                var busStartTime = localStorage.getItem(busStartTimeKey) || Date.now();
+                var animationIndex = Math.floor((Date.now() - busStartTime) / 4500);
+
+                function animateMarker() {
+                    if (animationIndex < coordinates.length) {
+                        marker.setLatLng([coordinates[animationIndex].lat, coordinates[animationIndex].lng]);
+                        localStorage.setItem(busCurrentPositionKey, JSON.stringify([coordinates[animationIndex].lat, coordinates[animationIndex].lng]));
+                        animationIndex++;
+                        setTimeout(animateMarker, 1500);
+                    } else {
+                        localStorage.setItem(busStatusKey, 'reached');
+                        /*alert("The bus has reached its destination.");*/
+                        var routeSrc = {{ route_data.Src|safe }};
+                        var routeDest = {{ route_data.Dest|safe }};
+                        var areSourceAndDestinationEqual = sourceLatLng[0] === routeSrc[0] && sourceLatLng[1] === routeSrc[1] &&
+                                                           destinationLatLng[0] === routeDest[0] && destinationLatLng[1] === routeDest[1];
+                        if (areSourceAndDestinationEqual) {
+                            /*alert("Bus is ready to be swapped.");*/
+                            localStorage.setItem(swapTimerKey, Date.now());
+                            setTimeout(swapSourceAndDestination, 20000); // 20 seconds timeout
+                        }
+                        if (marker) {
+                            map.removeLayer(marker);
+                            marker = null;
+                        }
+                    }
+                }
+
+                animateMarker();
+            }).addTo(map);
+        }
+
+        function resetBusTracking() {
+            var busStatusKey = 'busStatus_' + busId;
+            var busStartTimeKey = 'busStartTime_' + busId;
+            var busCurrentPositionKey = 'busCurrentPosition_' + busId;
+
+            localStorage.removeItem(busStatusKey);
+            localStorage.removeItem(busStartTimeKey);
+            localStorage.removeItem(busCurrentPositionKey);
+            localStorage.removeItem(swapTimerKey);
+
+            // Reset bus position to the source
+            busCurrentPosition = sourceLatLng;
+            if (marker) {
+                map.removeLayer(marker);
+                marker = null;
+            }
+            localStorage.setItem('busCurrentPosition_' + busId, JSON.stringify(sourceLatLng));
+            localStorage.setItem(busStatusKey, 'notStarted');
+            localStorage.setItem(busStartTimeKey, Date.now());
+            checkDepartureTimeAndStartBus();
+            /*alert('Bus tracking has been reset.');*/
+        }
+
+        function swapSourceAndDestination() {
+            var tempLatLng = sourceLatLng;
+            sourceLatLng = destinationLatLng;
+            destinationLatLng = tempLatLng;
+
+            localStorage.setItem('sourceLatLng_' + busId, JSON.stringify(sourceLatLng));
+            localStorage.setItem('destinationLatLng_' + busId, JSON.stringify(destinationLatLng));
+            localStorage.removeItem(swapTimerKey);
+
+            if (sourceMarker) {
+                map.removeLayer(sourceMarker);
+            }
+            if (destinationMarker) {
+                map.removeLayer(destinationMarker);
+            }
+
+            sourceMarker = L.marker(destinationLatLng).addTo(map)
+                .bindPopup('Source: {{ route_data.destination_name }}');
+            destinationMarker = L.marker(sourceLatLng).addTo(map)
+                .bindPopup('Destination: {{ route_data.source_name }}');
+
+            resetBusTracking();
+            /*alert("The source and destination have been swapped.");*/
+            checkDepartureTimeAndStartBus();
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        checkDepartureTimeAndStartBus();
+    </script>
+    {% endif %}
+</body>
+</html>

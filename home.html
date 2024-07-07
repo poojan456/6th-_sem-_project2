@@ -1,0 +1,194 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Bus Track System</title>
+    <style>
+        input[type="text"], button {
+            width: 300px; /* Set the width of the textboxes */
+            padding: 10px; /* Add padding for better appearance */
+            margin: 10px auto; /* Center the textboxes horizontally */
+            display: block; /* Make the textboxes block elements */
+            align-items: center;
+            text-align:center;
+            justify-content: center;
+        }
+        button {
+			border: none;
+			outline: 0;
+			padding: 20px;
+			margin-top: 20px;
+			font-size: 1rem;
+			color: white;
+			background-color: #0000ff;
+			text-align: center;
+			cursor: pointer;
+			width: 15rem;
+			border-radius: 4px;
+            margin: auto;
+		}
+		 
+		button:hover {
+			background-color: 	#008080;
+		}
+
+       
+</style>
+
+</head>
+<body>
+    <div id="bgi">
+    <!--<img src="/static/Lalpari-featured.jpg">-->
+    <nav>
+        <label class="logo">Track</label>
+        <ul>
+            
+            <li><a  class ="active" href="#">Home</a></li>
+           
+            <li><a href="index">Search</a></li>
+            
+            <li><a href="about">About</a></li>
+
+        </ul>
+    </nav>
+    
+</div>
+
+<div class=scd>
+    <h2>Schedule</h2>
+</div> 
+<table border="3" style="margin: auto;text-align:center">
+    
+    <thead>
+
+    <td>
+        SR.NO.
+       </td>
+       
+         
+     
+         <td>
+        Source
+         </td>
+         <td>
+        Destination
+         </td>
+         
+         <td>
+            Departure Time
+         </td>
+
+
+
+         
+    </thead>
+       <tr>
+       <td>
+        1
+       </td>
+        
+         
+     
+         <td>
+           Mangaon
+         </td>
+         <td>
+            Lonere-Vidyapith
+         </td>
+        
+         <td>
+            9.35
+         </td>
+
+
+         
+         
+       </tr>
+       <tr>
+       <td>
+        2
+       </td>
+        <td>
+           Roha 
+        </td>
+         
+     
+         <td>
+            Lonere-Vidyapeeth
+         </td>
+         <td>
+            7.30
+         </td>
+         
+       </tr>
+       <tr>
+       <td>
+        3
+       </td>
+        <td>
+          Mahad
+        </td>
+         
+     
+         <td>
+            Lonere-Vidyapeeth
+         </td>
+         <td>
+            8.00
+         
+         
+       </tr>
+       <tr>
+        <td>
+            4
+        </td>
+        <td>
+            Mangaon
+        </td>
+        <td>
+            Mahad
+        </td>
+        <td>
+            12.00
+        </td>
+    </tr>
+    <tr>
+        <td>
+            5
+        </td>
+        <td>
+            Roha
+        </td>
+        <td>
+            Mahad
+        </td>
+        <td>
+            1.00
+        </td>
+    </tr>    
+
+       
+         
+         
+         
+     
+         
+</table>
+<br>
+<br>
+<a href="index"><button id="getDataBtn">Search for Buses here</button></a>
+</div>
+
+
+
+        
+        <script src="1.js"></script>
+        
+                
+</body>
+</html>
+

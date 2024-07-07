@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Track Bus</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <h1>Track Bus</h1>
+    <button onclick="resetBusTracking()">Reset Bus Tracking</button>
+    <div id="map" style="width: 100%; height: 600px;"></div>
+    <script>
+        var map = L.map('map').setView({{ route_data.Src }}, 11);
+        var mapLink = "<a href='http://openstreetmap.org'>OpenStreetMap</a>";
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: 'Leaflet &copy; ' + mapLink + ', contribution',
+            maxZoom: 18
+        }).addTo(map);
+
+        var busIcon = L.icon({
+            iconUrl: "/static/images/bus_icon.png",  // Adjust this path to where your icon is located
+            iconSize: [50, 50]
+        });
+
+        var sourceLatLng = {{ route_data.Src }};
+        var destinationLatLng = {{ route_data.Dest }};
+        var busNumber = '{{ route_data.number }}';
+
+        var departureTime = '{{ route_data.departure_time }}'; // Set your departure time here
+
+        function checkDepartureTimeAndStartBus() {
+            fetch(`/get_bus_status/${busNumber}/`)
+                .then(response => response.json())
+                .then(data => {
+                    var status = data.status;
+                    var currentTime = data.current_time;
+                    var departureTime = data.departure_time;
+
+                    if (currentTime < departureTime) {
+                        alert("The bus has not departed yet.");
+                        return;
+                    }
+
+                    if (status === 'notStarted') {
+                        updateBusStatus('started');
+                        moveBus();
+                    } else if (status === 'started') {
+                        moveBus();
+                    } else if (status === 'reached') {
+                        alert("The bus has already reached its destination.");
+                    }
+                });
+        }
+
+        function moveBus() {
+            L.Routing.control({
+                waypoints: [
+                    L.latLng(sourceLatLng[0], sourceLatLng[1]),
+                    L.latLng(destinationLatLng[0], destinationLatLng[1])
+                ],
+                createMarker: function() { return null; }
+            }).on('routesfound', function (e) {
+                var routes = e.routes;
+                var coordinates = routes[0].coordinates;
+                var marker = L.marker(sourceLatLng, { icon: busIcon }).addTo(map);
+
+                function animateMarker() {
+                    fetch(`/get_bus_status/${busNumber}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            var position = data.bus_position;
+                            var animationIndex = coordinates.findIndex(coord =>
+                                coord.lat === position[0] && coord.lng === position[1]);
+
+                            if (animationIndex < coordinates.length - 1) {
+                                marker.setLatLng([coordinates[animationIndex + 1].lat, coordinates[animationIndex + 1].lng]);
+                                updateBusPosition([coordinates[animationIndex + 1].lat, coordinates[animationIndex + 1].lng]);
+                                setTimeout(animateMarker, 4500); // Adjust the interval as needed
+                            } else {
+                                updateBusStatus('reached');
+                                alert("The bus has reached its destination.");
+                            }
+                        });
+                }
+
+                animateMarker();
+            }).addTo(map);
+        }
+
+        function updateBusStatus(status) {
+            fetch(`/update_bus_status/${busNumber}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `status=${status}`
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.status !== 'success') {
+                      alert('Error updating bus status.');
+                  }
+              });
+        }
+
+        function resetBusTracking() {
+            fetch(`/reset_bus_tracking/${busNumber}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.status === 'success') {
+                      alert('Bus tracking has been reset.');
+                  } else {
+                      alert('Error resetting bus tracking.');
+                  }
+              });
+        }
+
+        checkDepartureTimeAndStartBus();
+    </script>
+</body>
+</html>
